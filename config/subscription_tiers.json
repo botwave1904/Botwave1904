@@ -1,0 +1,71 @@
+{
+  "starter": {
+    "display_name": "Starter",
+    "price_monthly": 29,
+    "description": "For solo operators who want to stop missing calls",
+    "limits": {
+      "agents": 1,
+      "channels": 1,
+      "quotes_per_month": 25,
+      "photo_bids_per_month": 0,
+      "customers": 100,
+      "crew_members": 0
+    },
+    "features": [
+      "ai_customer_answering",
+      "lead_capture",
+      "basic_quoting",
+      "monthly_summary"
+    ]
+  },
+  "pro": {
+    "display_name": "Pro",
+    "price_monthly": 79,
+    "description": "For the 3-8 person shop that's growing",
+    "limits": {
+      "agents": 4,
+      "channels": -1,
+      "quotes_per_month": -1,
+      "photo_bids_per_month": 5,
+      "customers": 500,
+      "crew_members": 5
+    },
+    "features": [
+      "ai_customer_answering",
+      "lead_capture",
+      "unlimited_quoting",
+      "photo_to_bid",
+      "crew_time_tracking",
+      "weekly_pdf_reports",
+      "vip_overhaul",
+      "all_channels"
+    ]
+  },
+  "business": {
+    "display_name": "Business",
+    "price_monthly": 149,
+    "description": "For established contractors with 8-20 people",
+    "limits": {
+      "agents": -1,
+      "channels": -1,
+      "quotes_per_month": -1,
+      "photo_bids_per_month": -1,
+      "customers": -1,
+      "crew_members": -1
+    },
+    "features": [
+      "ai_customer_answering",
+      "lead_capture",
+      "unlimited_quoting",
+      "photo_to_bid",
+      "crew_time_tracking",
+      "materials_inventory",
+      "change_orders",
+      "weekly_pdf_reports",
+      "vip_overhaul",
+      "all_channels",
+      "priority_support",
+      "quarterly_maintenance"
+    ]
+  }
+}

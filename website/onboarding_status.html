@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application Status | Botwave</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --secondary: #8b5cf6;
+            --accent: #10b981;
+            --bg: #0f0f23;
+            --bg-card: #1a1a2e;
+            --text: #ffffff;
+            --text-muted: #94a3b8;
+            --border: #333355;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            padding: 2rem 0;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 1.5rem;
+        }
+
+        .status-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 1.5rem;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .application-id {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 2rem;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .status-review {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+
+        .status-proposal {
+            background: rgba(99, 102, 241, 0.2);
+            color: var(--primary);
+        }
+
+        .status-signed {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--accent);
+        }
+
+        .status-complete {
+            background: rgba(16, 185, 129, 0.3);
+            color: var(--accent);
+        }
+
+        /* Timeline */
+        .timeline {
+            margin: 2rem 0;
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 1.5rem;
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border);
+            position: relative;
+        }
+
+        .timeline-item:last-child {
+            border-bottom: none;
+        }
+
+        .timeline-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .timeline-icon.completed {
+            background: var(--accent);
+        }
+
+        .timeline-icon.active {
+            background: var(--primary);
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
+        }
+
+        .timeline-icon.pending {
+            background: var(--bg);
+            border: 2px solid var(--border);
+        }
+
+        .timeline-content h4 {
+            margin-bottom: 0.25rem;
+        }
+
+        .timeline-content p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .timeline-date {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-left: auto;
+        }
+
+        /* Action Items */
+        .actions-section {
+            margin-top: 2rem;
+        }
+
+        .actions-section h3 {
+            margin-bottom: 1rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.875rem 1.5rem;
+            border-radius: 0.75rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.5);
+        }
+
+        .btn-secondary {
+            background: var(--bg);
+            color: var(--text);
+            border: 2px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary);
+        }
+
+        /* Contact */
+        .contact-section {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+        }
+
+        .contact-section a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .contact-section a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="index.html" class="logo">Botwave</a>
+        </div>
+
+        <div class="status-card">
+            <div class="application-id">Application ID: <strong id="appId">BW-2026-0001</strong></div>
+
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <span class="status-badge status-review" id="statusBadge">🕐 Under Review</span>
+            </div>
+
+            <div class="timeline" id="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-icon completed">✓</div>
+                    <div class="timeline-content">
+                        <h4>Application Submitted</h4>
+                        <p>Your onboarding form has been received</p>
+                    </div>
+                    <div class="timeline-date" id="submitDate">Today</div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-icon active">🔄</div>
+                    <div class="timeline-content">
+                        <h4>Under Review</h4>
+                        <p>Our team is reviewing your requirements</p>
+                    </div>
+                    <div class="timeline-date">In progress</div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-icon pending">📋</div>
+                    <div class="timeline-content">
+                        <h4>Proposal Sent</h4>
+                        <p>Custom proposal with pricing and timeline</p>
+                    </div>
+                    <div class="timeline-date">Pending</div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-icon pending">✍️</div>
+                    <div class="timeline-content">
+                        <h4>Agreement Signed</h4>
+                        <p>Service agreement executed</p>
+                    </div>
+                    <div class="timeline-date">Pending</div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-icon pending">🚀</div>
+                    <div class="timeline-content">
+                        <h4>Onboarding Complete</h4>
+                        <p>Your AI agents are live!</p>
+                    </div>
+                    <div class="timeline-date">Pending</div>
+                </div>
+            </div>
+
+            <div class="actions-section">
+                <h3>Actions Required</h3>
+                <div class="action-buttons">
+                    <a href="agreement_template.html" class="btn btn-primary" id="signAgreementBtn" style="display: none;">
+                        Sign Agreement
+                    </a>
+                    <a href="onboarding.html" class="btn btn-secondary">Edit Application</a>
+                    <a href="contact.html" class="btn btn-secondary">Contact Support</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="contact-section">
+            <p>Questions? Email us at <a href="/cdn-cgi/l/email-protection#bccfc9ccccd3cec8fcded3c8cbddcad992ddd5"><span class="__cf_email__" data-cfemail="52212722223d202612303d26253324377c333b">[email&#160;protected]</span></a></p>
+        </div>
+    </div>
+
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+        // Set submit date
+        const today = new Date();
+        document.getElementById('submitDate').textContent = today.toLocaleDateString('en-US', {
+            month: 'short', day: 'numeric'
+        });
+
+        // Generate application ID
+        const appId = 'BW-' + today.getFullYear() + '-' + Math.random().toString(36).substr(2, 6).toUpperCase();
+        document.getElementById('appId').textContent = appId;
+
+        // Simulate status updates (in production, fetch from API)
+        const urlParams = new URLSearchParams(window.location.search);
+        const status = urlParams.get('status') || 'review';
+
+        const statusConfig = {
+            review: { badge: 'Under Review', class: 'status-review', icon: '🔄' },
+            proposal: { badge: 'Proposal Sent', class: 'status-proposal', icon: '📋' },
+            signed: { badge: 'Agreement Signed', class: 'status-signed', icon: '✍️' },
+            complete: { badge: 'Complete', class: 'status-complete', icon: '✅' }
+        };
+
+        if (statusConfig[status]) {
+            const badge = document.getElementById('statusBadge');
+            badge.textContent = statusConfig[status].icon + ' ' + statusConfig[status].badge;
+            badge.className = 'status-badge ' + statusConfig[status].class;
+
+            // Show sign button when proposal is sent
+            if (status === 'proposal') {
+                document.getElementById('signAgreementBtn').style.display = 'inline-flex';
+            }
+        }
+
+        // Loa

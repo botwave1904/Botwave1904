@@ -1,0 +1,29 @@
+# Botwave Platform — Python Dependencies
+# Install: pip install -r requirements.txt
+
+# Web framework
+flask==3.0.0
+gunicorn==21.2.0
+
+# Telegram bot
+python-telegram-bot==21.0
+
+# LLM client
+requests==2.31.0
+
+# Database
+# SQLite is built-in; uncomment for PostgreSQL:
+# psycopg2-binary==2.9.9
+
+# Payments
+stripe==7.0.0
+
+# PDF reports
+reportlab==4.1.0
+
+# Environment
+python-dotenv==1.0.0
+
+# Config validation
+jsonschema==4.19.0
+pyyaml==6.0.1

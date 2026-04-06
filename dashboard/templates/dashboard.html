@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Botwave Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0b1120;--surface:#111827;--card:#1e293b;--border:#334155;--text:#e2e8f0;--muted:#94a3b8;--accent:#0891b2;--green:#10b981;--amber:#f59e0b;--red:#ef4444;--blue:#3b82f6}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.sidebar{position:fixed;top:0;left:0;width:220px;height:100vh;background:var(--surface);border-right:1px solid var(--border);padding:1.5rem 1rem;display:flex;flex-direction:column}
+.logo{font-size:1.25rem;font-weight:700;color:var(--accent);margin-bottom:2rem;padding:0 .5rem}
+.nav-item{display:flex;align-items:center;gap:.75rem;padding:.65rem .75rem;border-radius:8px;color:var(--muted);text-decoration:none;font-size:.9rem;font-weight:500;margin-bottom:.25rem;transition:all .2s}
+.nav-item:hover,.nav-item.active{background:rgba(8,145,178,.1);color:var(--accent)}
+.main{margin-left:220px;padding:2rem}
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem}
+.header h1{font-size:1.5rem;font-weight:700}
+.header .date{color:var(--muted);font-size:.85rem}
+
+/* Stat Cards */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:2rem}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.25rem;transition:border-color .2s}
+.stat-card:hover{border-color:var(--accent)}
+.stat-label{font-size:.8rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem}
+.stat-value{font-size:1.75rem;font-weight:700;font-family:'JetBrains Mono',monospace}
+.stat-value.green{color:var(--green)}.stat-value.blue{color:var(--blue)}.stat-value.amber{color:var(--amber)}.stat-value.accent{color:var(--accent)}
+
+/* Tables */
+.section{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin-bottom:1.5rem}
+.section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
+.section-title{font-size:1rem;font-weight:600}
+.badge{display:inline-flex;padding:.2rem .6rem;border-radius:100px;font-size:.7rem;font-weight:600;text-transform:uppercase}
+.badge-new{background:rgba(59,130,246,.15);color:var(--blue)}
+.badge-pending{background:rgba(245,158,11,.15);color:var(--amber)}
+.badge-scheduled{background:rgba(16,185,129,.15);color:var(--green)}
+.badge-paid{background:rgba(16,185,129,.2);color:var(--green)}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;padding:.75rem .5rem;border-bottom:1px solid var(--border)}
+td{padding:.75rem .5rem;font-size:.85rem;border-bottom:1px solid rgba(51,65,85,.4)}
+tr:last-child td{border-bottom:none}
+.empty{text-align:center;padding:2rem;color:var(--muted);font-style:italic}
+
+/* Responsive */
+@media(max-width:768px){.sidebar{display:none}.main{margin-left:0}}
+</style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="logo">Botwave</div>
+  <a class="nav-item active" href="/">📊 Dashboard</a>
+  <a class="nav-item" href="/api/customers">👥 Customers</a>
+  <a class="nav-item" href="/api/quotes">📋 Quotes</a>
+  <a class="nav-item" href="/api/appointments">📅 Appointments</a>
+  <a class="nav-item" href="/api/leads">🎯 Leads</a>
+  <a class="nav-item" href="/website/">🌐 Website</a>
+  <a class="nav-item" href="/api/stripe/status">💳 Stripe</a>
+  <a class="nav-item" href="/health" style="margin-top:auto">❤️ Health</a>
+</aside>
+
+<main class="main">
+  <div class="header">
+    <h1>Business Dashboard</h1>
+    <div class="date" id="currentDate"></div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-label">Customers</div>
+      <div class="stat-value accent">{{ stats.customers }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Revenue</div>
+      <div class="stat-value green">${{ "%.2f"|format(stats.revenue) }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Pending Quotes</div>
+      <div class="stat-value amber">{{ stats.pending_quotes }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Upcoming Appts</div>
+      <div class="stat-value blue">{{ stats.upcoming_appointments }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">New Leads</div>
+      <div class="stat-value green">{{ stats.new_leads }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Total Quotes</div>
+      <div class="stat-value accent">{{ stats.quotes }}</div>
+    </div>
+  </div>
+
+  <!-- Recent Leads -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">🎯 Recent Leads</div>
+      <span class="badge badge-new">{{ stats.new_leads }} new</span>
+    </div>
+    {% if leads %}
+    <table>
+      <thead><tr><th>Name</th><th>Email</th><th>Source</th><th>Company</th><th>Date</th></tr></thead>
+      <tbody>
+      {% for lead in leads %}
+      <tr>
+        <td>{{ lead.name or '—' }}</td>
+        <td>{{ lead.email or '—' }}</td>
+        <td><span class="badge badge-new">{{ lead.source }}</span></td>
+        <td>{{ lead.company or '—' }}</td>
+        <td>{{ lead.created_at[:10] if lead.created_at else '—' }}</td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="empty">No leads yet. Share your website to start capturing leads.</div>
+    {% endif %}
+  </div>
+
+  <!-- Recent Quotes -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">📋 Recent Quotes</div>
+      <span class="badge badge-pending">{{ stats.pending_quotes }} pending</span>
+    </div>
+    {% if quotes %}
+    <table>
+      <thead><tr><th>Customer</th><th>Service</th><th>Range</th><th>Status</th><th>Date</th></tr></thead>
+      <tbody>
+      {% for q in quotes %}
+      <tr>
+        <td>{{ q.customer_name }}</td>
+        <td>{{ q.service_type or '—' }}</td>
+        <td>${{ "%.0f"|format(q.price_low or 0) }} – ${{ "%.0f"|format(q.price_high or 0) }}</td>
+        <td><span class="badge badge-pending">{{ q.status }}</span></td>
+        <td>{{ q.created_at[:10] if q.created_at else '—' }}</td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="empty">No quotes yet.</div>
+    {% endif %}
+  </div>
+
+  <!-- Upcoming Appointments -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">📅 Upcoming Appointments</div>
+    </div>
+    {% if appointments %}
+    <table>
+      <thead><tr><th>Customer</th><th>Service</th><th>Date</th><th>Time</th><th>Status</th></tr></thead>
+      <tbody>
+      {% for a in appointments %}
+      <tr>
+        <td>{{ a.customer_name }}</td>
+        <td>{{ a.service_type or '—' }}</td>
+        <td>{{ a.scheduled_date }}</td>
+        <td>{{ a.scheduled_time }}</td>
+        <td><span class="badge badge-scheduled">{{ a.status }}</span></td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="empty">No upcoming appointments.</div>
+    {% endif %}
+  </div>
+</main>
+
+<script>
+document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+// Auto-refresh every 30s
+setTimeout(()=>location.reload(), 30000);
+</script>
+</body>
+</html>
